@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0, minimum-scale=1.0"
+    />
+
+    <title>Admin Home Page</title>
+
+    <link
+            rel="stylesheet"
+            type="text/css"
+            th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"
+    />
+    <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+    <script
+            type="text/javascript"
+            th:src="@{/webjars/jquery/jquery.min.js}"
+    ></script>
+    <script
+            type="text/javascript"
+            th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"
+    ></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div>
+        <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+            <a class="navbar-brand ms-3" th:href="@{/}">
+                <img th:src="@{/images/logo.png}" />
+            </a>
+            <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav px-3">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/users}">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/categories}">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/brands}">Brands</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/products}">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/customers}">Customers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/shipping}">Shipping</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/orders}">Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/report}">Sales Report</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/articles}">Articles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/menus}">Menus</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/settings}">Settings</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div>
+        <h2 class="text-center my-4">Manage Users</h2>
+        <a th:href="@{/users/new}">Create New User</a>
+    </div>
+    <div th:if="${message != null}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+    <div th:if="${error != null}" class="alert alert-danger text-center">
+        [[${error}]]
+    </div>
+    <div class="mt-4">
+        <table
+                class="table table-bordered table-striped table-hover table-responsive-xl"
+        >
+            <thead class="thead-dark">
+            <tr>
+                <th>User ID</th>
+                <th>Photos</th>
+                <th>E-mail</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Roles</th>
+                <th>Enabled</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${listUsers}">
+                <td>[[${user.id}]]</td>
+                <td></td>
+                <td>[[${user.email}]]</td>
+                <td>[[${user.firstName}]]</td>
+                <td>[[${user.lastName}]]</td>
+                <td>[[${user.roles}]]</td>
+                <td>
+                    <a
+                            th:if="${user.enabled==true}"
+                            th:href="@{/users/{id}/update(id=${user.id},enabled=false)}"
+                            class="material-symbols-outlined icon-green"
+                    >expand_circle_down</a
+                    >
+                    <a
+                            th:if="${user.enabled==false}"
+                            th:href="@{/users/{id}/update(id=${user.id},enabled=true)}"
+                            class="material-symbols-outlined icon-gray"
+                    >expand_circle_down</a
+                    >
+                </td>
+                <td>
+                    <a
+                            th:href="@{'/users/edit/' + ${user.id}}"
+                            title="edit user"
+                            class="material-symbols-outlined icon-green"
+                    >
+                        edit_square
+                    </a>
+                    <a
+                            id="delete-user"
+                            th:userId="${user.id}"
+                            th:href="@{'/users/delete/' + ${user.id}}"
+                            class="material-symbols-outlined icon-silver"
+                    >
+                        delete
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal delete confirmation -->
+    <div class="modal fade text-center" id="deleteModalConfirm">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitle">DELETE CONFIRMATION</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        &times;
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <span id="modalBody"> </span>
+                </div>
+
+                <div class="modal-footer">
+                    <a
+                            id="yesButton"
+                            href=""
+                            class="btn btn-success"
+                    >Yes</a
+                    >
+                    <button
+                            type="button"
+                            class="btn btn-danger"
+                            data-bs-dismiss="modal"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <p> Control Panel - Copyright &copy; </p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+      $("#delete-user").on("click", function (e) {
+        e.preventDefault();
+        userId = e.target.getAttribute("userId");
+        link = e.target.getAttribute("href");
+      $('#yesButton').attr('href',link);
+        showModalDialog(`Do you want to delete user with ID [${userId}]`);
+      });
+    });
+
+    function showModalDialog(message) {
+      $("#modalBody").text(message);
+      var myModal = new bootstrap.Modal(
+        document.getElementById("deleteModalConfirm")
+      );
+      myModal.show();
+    }
+</script>
+</body>
+</html>
