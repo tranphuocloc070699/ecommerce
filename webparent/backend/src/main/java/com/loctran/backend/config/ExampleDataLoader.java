@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Random;
 
 @Component
 public class ExampleDataLoader implements CommandLineRunner {
@@ -28,11 +29,7 @@ public class ExampleDataLoader implements CommandLineRunner {
       userDataLoader();
       System.out.println("Example data created.");
     }
-
-
-
   }
-
   private void roleDataLoader(){
     Role roleAdmin = Role.builder()
         .name("Admin")
@@ -67,27 +64,45 @@ public class ExampleDataLoader implements CommandLineRunner {
   }
 
   private void userDataLoader(){
-    User user1 = User.builder()
-        .email("user1@gmail.com")
-        .password("user1")
-        .firstName("1")
-        .lastName("User")
-        .roles(new HashSet<>())
-        .build();
-    User user2 = User.builder()
-        .email("user2@gmail.com")
-        .password("user2")
-        .firstName("2")
-        .lastName("User")
-        .roles(new HashSet<>())
-        .build();
-    Role roleAdmin = Role.builder().id(1).build();
-    Role roleSalesPerson = Role.builder().id(2).build();
 
-    user1.addRole(roleAdmin);
-    user2.addRole(roleSalesPerson);
+    for(var i =1;i<=100;i++){
+      Random random = new Random();
 
-    userRepository.save(user1);
-    userRepository.save(user2);
+      // Generate a random number between 1 and 5 (inclusive)
+      int randomNumber = random.nextInt(5) + 1;
+      User user = User.builder()
+          .email("user"+i+"@gmail.com")
+          .password("user"+i)
+          .firstName(String.valueOf(i))
+          .lastName("User")
+          .roles(new HashSet<>())
+          .build();
+      Role role = Role.builder().id(randomNumber).build();
+      user.addRole(role);
+      userRepository.save(user);
+    }
+
+//    User user1 = User.builder()
+//        .email("user1@gmail.com")
+//        .password("user1")
+//        .firstName("1")
+//        .lastName("User")
+//        .roles(new HashSet<>())
+//        .build();
+//    User user2 = User.builder()
+//        .email("user2@gmail.com")
+//        .password("user2")
+//        .firstName("2")
+//        .lastName("User")
+//        .roles(new HashSet<>())
+//        .build();
+//    Role roleAdmin = Role.builder().id(1).build();
+//    Role roleSalesPerson = Role.builder().id(2).build();
+//
+//    user1.addRole(roleAdmin);
+//    user2.addRole(roleSalesPerson);
+
+//    userRepository.save(user1);
+//    userRepository.save(user2);
   }
 }

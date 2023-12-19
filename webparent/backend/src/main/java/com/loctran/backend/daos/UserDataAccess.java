@@ -4,6 +4,8 @@ import com.loctran.backend.exceptions.UserNotFoundException;
 import com.loctran.backend.repositories.UserRepository;
 import com.loctran.webcommon.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,10 @@ public class UserDataAccess {
       users.add(user);
     }
     return users;
+  }
+
+  public Page<User> findByPage(Pageable pageable){
+    return userRepository.findAll(pageable);
   }
   public User saveUser(User user){
     return userRepository.save(user);

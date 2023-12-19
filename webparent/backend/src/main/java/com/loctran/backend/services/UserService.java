@@ -6,19 +6,23 @@ import com.loctran.backend.exceptions.UserNotFoundException;
 import com.loctran.webcommon.entity.Role;
 import com.loctran.webcommon.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 @Transactional
 public class UserService {
+  public static final int USERS_PER_PAGE = 5;
   @Autowired
   private UserDataAccess userDataAccess;
   @Autowired
@@ -32,8 +36,7 @@ public class UserService {
 
   public List<Role> listAllRoles() {return roleDataAccess.findAllRoles();}
 
-  public User saveUser(User user, MultipartFile file) throws UserNotFoundException {
-    System.out.println(file.getOriginalFilename());
+  public User saveUser(User user) throws UserNotFoundException {
     boolean isUpdating = user.getId()!=null;
     if(isUpdating){
       User userExisting = userDataAccess.findById(user.getId());
@@ -46,9 +49,9 @@ public class UserService {
       encodedPassword(user);
     }
 
-    return null;
+//    return null;
 
-//    return  userDataAccess.saveUser(user);
+    return  userDataAccess.saveUser(user);
   }
 
   public String checkDuplicateEmail(Integer id,String email){
@@ -119,4 +122,20 @@ public class UserService {
     }
     return "redirect:/users";
   }
+
+
+  public Page<User> listByPage(int pageNum, String sortField, String sortDir, String keyword) {
+    Sort sort = Sort.by(sortField);
+
+    sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+
+    Pageable pageable = PageRequest.of(pageNum - 1, USERS_PER_PAGE, sort);
+
+    if (keyword != null) {
+      return userDataAccess.findAll(keyword, pageable);
+    }
+
+    return userDataAccess.findAll(pageable);
+  }
+
 }

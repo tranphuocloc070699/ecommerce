@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 
+import java.awt.print.Pageable;
 import java.util.HashSet;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -130,5 +133,16 @@ public class UserRepositoryTests {
   public void testDisabled(){
     Integer id = 5;
     userRepository.updateEnabled(id,false);
+  }
+
+  @Test
+  public void testPaging(){
+    PageRequest pageable = PageRequest.of(0,4);
+
+    Page<User> userPage = userRepository.findAll(pageable);
+
+    System.out.println(userPage.getTotalPages());
+
+
   }
 }
